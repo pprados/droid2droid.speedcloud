@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, Org_remoteandroid_SpeedCloudActivity!</string>
+    <string name="app_name">Local/Cloud test</string>
+    <string name="start">Start</string>
+    <string name="in_board">In board</string>
+    <string name="in_cloud">In cloud</string>
+
+</resources>
