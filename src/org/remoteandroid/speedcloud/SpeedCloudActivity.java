@@ -19,8 +19,14 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,9 +37,13 @@ public class SpeedCloudActivity extends Activity
 	private EditText mNumberText;
 	private TextView mTextInBoard;
 	private TextView mTextInCloud;
+	private Spinner mSpinner;
 	private Button mStart;
 	
+	private String mTarget="ip://192.168.1.130";
+	
 	private Intent mIntent;
+	
 	private ServiceConnection mServiceConnection=new ServiceConnection()
 	{
 		
@@ -61,19 +71,46 @@ public class SpeedCloudActivity extends Activity
 		mTextInCloud=(TextView)findViewById(R.id.in_cloud);
 		mStart=(Button)findViewById(R.id.start);
 		mNumberText=(EditText)findViewById(R.id.number);
-		mStart.setEnabled(false);
+		mSpinner = (Spinner) findViewById(R.id.spinner);
+	    ArrayAdapter<CharSequence> adapter = 
+	    		ArrayAdapter.createFromResource(
+	    			this, 
+	    			R.array.devices, 
+	    			android.R.layout.simple_spinner_item);
+	    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	    mSpinner.setAdapter(adapter);
+	    mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() 
+		    {
+		        public void onItemSelected(AdapterView<?> parent,
+		            View view, int pos, long id) 
+		        {
+		        	mTarget=getResources().getStringArray(R.array.devicesip)[pos];
+		        	bindRemoteAndroid();
+		        }
+	
+		        public void onNothingSelected(AdapterView parent) 
+		        {
+		          // Do nothing.
+		        }
+		    });
+	    bindRemoteAndroid();
 		mIntent=new Intent(this,SpeedService.class);
 //		bindOtherProcessService(this,mIntent,mServiceConnection,BIND_AUTO_CREATE);
+	}
+	private void bindRemoteAndroid()
+	{
+		mStart.setEnabled(false);
 		bindRemoteAndroidService(this,
 			
 			// Connect Remote android
-			Uri.parse("ip://192.168.1.130"),RemoteAndroidManager.FLAG_PROPOSE_PAIRING,
+			Uri.parse(mTarget),RemoteAndroidManager.FLAG_PROPOSE_PAIRING,
 			
 			// Publish APK
 			mPublishListener,0,10000,
 			
 			// Bind remote service
 			mIntent,mServiceConnection, BIND_AUTO_CREATE);
+		
 	}
 	private PublishListener mPublishListener=new PublishListener()
 	{
@@ -232,8 +269,50 @@ public class SpeedCloudActivity extends Activity
 	}
 	public void onClick(View view)
 	{
-		new DoCalc(mTextInCloud,"In cloud:",mSpeedInCloud).execute();
-		new DoCalc(mTextInBoard,"In board:",mSpeedInBoard).execute();
+		mStart.setEnabled(false);
+		new AsyncTask<Void,Void,long[]>()
+		{
+			@Override
+			protected void onPreExecute()
+			{
+				mTextInCloud.setText("...");
+				mTextInBoard.setText("...");
+			}
+			@Override
+			protected long[] doInBackground(Void... params)
+			{
+				try
+				{
+					long[] rc=new long[2];
+					long start;
+					int maxnumber=Integer.parseInt(mNumberText.getText().toString());
+					start=System.currentTimeMillis();
+					mSpeedInCloud.calc(maxnumber);
+					rc[0]=System.currentTimeMillis()-start;
+	
+					start=System.currentTimeMillis();
+					mSpeedInBoard.calc(maxnumber);
+					rc[1]=System.currentTimeMillis()-start;
+					return rc;
+				}
+				catch (RemoteException e)
+				{
+					return null;
+				}
+			}
+			@Override
+			protected void onPostExecute(long[] result)
+			{
+				mStart.setEnabled(true);
+				if (result!=null)
+				{
+					mTextInCloud.setText("In cloud:"+result[0]);
+					mTextInBoard.setText("In board:"+result[1]);
+				}
+			}
+		}.execute();
+//		new DoCalc(mTextInCloud,"In cloud:",mSpeedInCloud).execute();
+//		new DoCalc(mTextInBoard,"In board:",mSpeedInBoard).execute();
 	}
 	
 	class DoCalc extends AsyncTask<Void, Void, Void>
@@ -274,7 +353,6 @@ public class SpeedCloudActivity extends Activity
 		@Override
 		protected void onPostExecute(Void result)
 		{
-			super.onPostExecute(result);
 			mTextView.setText(mMsg+(System.currentTimeMillis()-start));
 		}
 	};
