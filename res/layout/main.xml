@@ -25,13 +25,15 @@
         android:id="@+id/in_board"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/in_board" />
+        android:text="@string/in_board"
+        android:textSize="30dp" />
 
     <TextView
         android:id="@+id/in_cloud"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/in_cloud" />
+        android:text="@string/in_cloud"
+        android:textSize="30dp" />
 
     <Button
         android:id="@+id/start"
@@ -39,6 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:onClick="onClick"
-        android:text="@string/start" />
+        android:text="@string/start" 
+        />
 
 </LinearLayout>

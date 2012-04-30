@@ -93,8 +93,8 @@ public class SpeedCloudActivity extends Activity
 		          // Do nothing.
 		        }
 		    });
-	    bindRemoteAndroid();
 		mIntent=new Intent(this,SpeedService.class);
+	    bindRemoteAndroid();
 //		bindOtherProcessService(this,mIntent,mServiceConnection,BIND_AUTO_CREATE);
 	}
 	private void bindRemoteAndroid()
@@ -270,7 +270,7 @@ public class SpeedCloudActivity extends Activity
 	public void onClick(View view)
 	{
 		mStart.setEnabled(false);
-		new AsyncTask<Void,Void,long[]>()
+		new AsyncTask<Void,Long,long[]>()
 		{
 			@Override
 			protected void onPreExecute()
@@ -289,7 +289,7 @@ public class SpeedCloudActivity extends Activity
 					start=System.currentTimeMillis();
 					mSpeedInCloud.calc(maxnumber);
 					rc[0]=System.currentTimeMillis()-start;
-	
+					publishProgress(rc[0]);
 					start=System.currentTimeMillis();
 					mSpeedInBoard.calc(maxnumber);
 					rc[1]=System.currentTimeMillis()-start;
@@ -300,14 +300,18 @@ public class SpeedCloudActivity extends Activity
 					return null;
 				}
 			}
+			protected void onProgressUpdate(Long... values) 
+			{
+				mTextInCloud.setText("In cloud:"+values[0]+"ms");
+			}
 			@Override
 			protected void onPostExecute(long[] result)
 			{
 				mStart.setEnabled(true);
 				if (result!=null)
 				{
-					mTextInCloud.setText("In cloud:"+result[0]);
-					mTextInBoard.setText("In board:"+result[1]);
+					mTextInCloud.setText("In cloud:"+result[0]+"ms");
+					mTextInBoard.setText("In board:"+result[1]+"ms");
 				}
 			}
 		}.execute();
