@@ -19,8 +19,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -43,6 +41,7 @@ public class SpeedCloudActivity extends Activity
 	private String mTarget="ip://192.168.1.130";
 	
 	private Intent mIntent;
+	private RemoteAndroidManager mRemoteAndroidManager;
 	
 	private ServiceConnection mServiceConnection=new ServiceConnection()
 	{
@@ -164,7 +163,7 @@ public class SpeedCloudActivity extends Activity
 	 * @param serviceConnection		The callback to manage the life cycle to remote objet.
 	 * @param flagsService			Operation options for the binding. May be 0, BIND_AUTO_CREATE, BIND_DEBUG_UNBIND, BIND_NOT_FOREGROUND, BIND_ABOVE_CLIENT, BIND_ALLOW_OOM_MANAGEMENT, or BIND_WAIVE_PRIORITY.
 	 */
-	private static void bindRemoteAndroidService(
+	private void bindRemoteAndroidService(
 			final Context context,
 			
 			final Uri remoteAndroidUri,
@@ -193,6 +192,7 @@ public class SpeedCloudActivity extends Activity
 				public void bind(final RemoteAndroidManager manager)
 				{
 					final ManagerListener me=this;
+					mRemoteAndroidManager=manager;
 					// 2. Bind remote android
 					manager.bindRemoteAndroid(
 						new Intent(Intent.ACTION_MAIN,remoteAndroidUri), 
@@ -359,5 +359,6 @@ public class SpeedCloudActivity extends Activity
 		{
 			mTextView.setText(mMsg+(System.currentTimeMillis()-start));
 		}
-	};
+	}
+
 }
