@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -65,6 +66,9 @@ public class SpeedCloudActivity extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		
+		WifiManager wifiManager=(WifiManager)getSystemService(Context.WIFI_SERVICE);
+		final boolean x33b="X33B".equals(wifiManager.getConnectionInfo().getSSID());
 		setContentView(R.layout.main);
 		mTextInBoard=(TextView)findViewById(R.id.in_board);
 		mTextInCloud=(TextView)findViewById(R.id.in_cloud);
@@ -83,8 +87,14 @@ public class SpeedCloudActivity extends Activity
 		        public void onItemSelected(AdapterView<?> parent,
 		            View view, int pos, long id) 
 		        {
-		        	mTarget=getResources().getStringArray(R.array.devicesip)[pos];
-		        	bindRemoteAndroid();
+		        	final String[] ips=getResources().getStringArray(x33b 
+		        		? R.array.devicesipX33 
+		        		: R.array.devicesip);
+		        	if (pos<ips.length)
+		        	{
+		        		mTarget=ips[pos];
+		        		bindRemoteAndroid();
+		        	}
 		        }
 	
 		        public void onNothingSelected(AdapterView parent) 
@@ -102,7 +112,7 @@ public class SpeedCloudActivity extends Activity
 		bindRemoteAndroidService(this,
 			
 			// Connect Remote android
-			Uri.parse(mTarget),RemoteAndroidManager.FLAG_PROPOSE_PAIRING,
+			Uri.parse(mTarget),RemoteAndroidManager.FLAG_PROPOSE_PAIRING/*|RemoteAndroidManager.FLAG_ACCEPT_ANONYMOUS*/,
 			
 			// Publish APK
 			mPublishListener,0,10000,

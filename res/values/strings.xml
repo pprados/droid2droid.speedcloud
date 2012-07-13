@@ -14,6 +14,7 @@
         <item>PPR-DesireHD</item>
         <item>PPR-HTCMagic</item>
         <item>PPR-Xoom</item>
+        <item>PPR-Dongle</item>
         <item>Nic-Milestone</item>
         <item>Rom-Milestone</item>
         <item>Eddy-GalaxyNexus</item>
@@ -28,12 +29,22 @@
         <item>ip://192.168.1.113</item>
         <item>ip://192.168.1.115</item>
         <item>ip://192.168.1.112</item>
+        <item>ip://192.168.1.121</item>
         <item>ip://192.168.1.116</item>
         <item>ip://192.168.1.117</item>
         <item>ip://192.168.1.118</item>
         <item>ip://192.168.1.119</item>
         <item>ip://192.168.1.131</item>
         <item>ip://192.168.1.132</item>
+    </string-array>    
+    
+    <string-array name="devicesipX33">
+        <item>ip://192.168.0.34</item>
+        <item>ip://192.168.0.32</item>
+        <item>ip://192.168.0.30</item>
+        <item>ip://192.168.0.33</item>
+        <item>ip://192.168.0.31</item>
+        <item>ip://192.168.0.35</item>
     </string-array>    
     
 </resources>
