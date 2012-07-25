@@ -1,4 +1,4 @@
-package org.remoteandroid.speedcloud;
+package org.droid2droid.speedcloud;
 
 import android.app.Service;
 import android.content.Intent;

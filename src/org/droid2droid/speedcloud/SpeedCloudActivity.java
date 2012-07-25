@@ -1,12 +1,15 @@
-package org.remoteandroid.speedcloud;
+package org.droid2droid.speedcloud;
 
+
+import static org.droid2droid.Droid2DroidManager.FLAG_ACCEPT_ANONYMOUS;
+import static org.droid2droid.Droid2DroidManager.FLAG_PROPOSE_PAIRING;
 
 import java.io.IOException;
 
-import org.remoteandroid.RemoteAndroid;
-import org.remoteandroid.RemoteAndroid.PublishListener;
-import org.remoteandroid.RemoteAndroidManager;
-import org.remoteandroid.RemoteAndroidManager.ManagerListener;
+import org.droid2droid.Droid2DroidManager;
+import org.droid2droid.Droid2DroidManager.ManagerListener;
+import org.droid2droid.RemoteAndroid;
+import org.droid2droid.RemoteAndroid.PublishListener;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -31,7 +34,7 @@ import android.widget.Toast;
 
 public class SpeedCloudActivity extends Activity
 {
-	private Speed mSpeedInBoard=new SpeedImpl();
+	private final Speed mSpeedInBoard=new SpeedImpl();
 	private Speed mSpeedInCloud;
 	private EditText mNumberText;
 	private TextView mTextInBoard;
@@ -42,9 +45,8 @@ public class SpeedCloudActivity extends Activity
 	private String mTarget="ip://192.168.1.130";
 	
 	private Intent mIntent;
-	private RemoteAndroidManager mRemoteAndroidManager;
 	
-	private ServiceConnection mServiceConnection=new ServiceConnection()
+	private final ServiceConnection mServiceConnection=new ServiceConnection()
 	{
 		
 		@Override
@@ -84,7 +86,8 @@ public class SpeedCloudActivity extends Activity
 	    mSpinner.setAdapter(adapter);
 	    mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() 
 		    {
-		        public void onItemSelected(AdapterView<?> parent,
+		        @Override
+				public void onItemSelected(AdapterView<?> parent,
 		            View view, int pos, long id) 
 		        {
 		        	final String[] ips=getResources().getStringArray(x33b 
@@ -97,7 +100,8 @@ public class SpeedCloudActivity extends Activity
 		        	}
 		        }
 	
-		        public void onNothingSelected(AdapterView parent) 
+		        @Override
+				public void onNothingSelected(AdapterView<?> parent) 
 		        {
 		          // Do nothing.
 		        }
@@ -112,7 +116,7 @@ public class SpeedCloudActivity extends Activity
 		bindRemoteAndroidService(this,
 			
 			// Connect Remote android
-			Uri.parse(mTarget),RemoteAndroidManager.FLAG_PROPOSE_PAIRING/*|RemoteAndroidManager.FLAG_ACCEPT_ANONYMOUS*/,
+			Uri.parse(mTarget),FLAG_PROPOSE_PAIRING|FLAG_ACCEPT_ANONYMOUS,
 			
 			// Publish APK
 			mPublishListener,0,10000,
@@ -121,7 +125,7 @@ public class SpeedCloudActivity extends Activity
 			mIntent,mServiceConnection, BIND_AUTO_CREATE);
 		
 	}
-	private PublishListener mPublishListener=new PublishListener()
+	private final PublishListener mPublishListener=new PublishListener()
 	{
 		
 		@Override
@@ -153,13 +157,6 @@ public class SpeedCloudActivity extends Activity
 		}
 	};
 
-	private void bindOtherProcessService(final Context context,
-			final Intent serviceIntent,
-			final ServiceConnection serviceConnection,
-			final int flags)
-	{
-		context.bindService(serviceIntent,serviceConnection, flags);
-	}
 	/**
 	 * Integrated state machine to bind a remote service.
 	 * 
@@ -188,21 +185,20 @@ public class SpeedCloudActivity extends Activity
 			final int flagsService)
 	{
 		// 1. Bind manager
-		RemoteAndroidManager.bindManager(context, 
+		Droid2DroidManager.bindManager(context, 
     		new ManagerListener()
 			{
 				
 				@Override
-				public void unbind(RemoteAndroidManager manager)
+				public void unbind(Droid2DroidManager manager)
 				{
 					serviceConnection.onServiceDisconnected(null);
 				}
 				
 				@Override
-				public void bind(final RemoteAndroidManager manager)
+				public void bind(final Droid2DroidManager manager)
 				{
 					final ManagerListener me=this;
-					mRemoteAndroidManager=manager;
 					// 2. Bind remote android
 					manager.bindRemoteAndroid(
 						new Intent(Intent.ACTION_MAIN,remoteAndroidUri), 
@@ -310,6 +306,7 @@ public class SpeedCloudActivity extends Activity
 					return null;
 				}
 			}
+			@Override
 			protected void onProgressUpdate(Long... values) 
 			{
 				mTextInCloud.setText("In cloud:"+values[0]+"ms");
