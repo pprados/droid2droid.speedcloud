@@ -98,7 +98,7 @@ public class SpeedCloudActivity extends Activity
 	}
 	private void bindRemoteAndroid()
 	{
-		mStart.setEnabled(false);
+//		mStart.setEnabled(false);
 		bindRemoteAndroidService(this,
 			
 			// Connect Remote android
